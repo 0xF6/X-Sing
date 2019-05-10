@@ -4,4 +4,8 @@
     <LangVersion>preview</LangVersion>
     <RazorLangVersion>3.0</RazorLangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.1" />
+  </ItemGroup>
 </Project>
