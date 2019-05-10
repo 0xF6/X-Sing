@@ -9,6 +9,7 @@
     {
         public DbSet<Record> Records { get; set; }
         public DbSet<Setting> Settings { get; set; }
+        public DbSet<Log> Logs { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
