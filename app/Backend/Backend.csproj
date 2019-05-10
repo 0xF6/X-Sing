@@ -6,6 +6,5 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\lib\Core\Core.csproj" />
-    <ProjectReference Include="..\..\thridparty\dns\DNS\DNS.csproj" />
   </ItemGroup>
 </Project>

@@ -12,7 +12,7 @@
     using DNS.Protocol;
     using DNS.Protocol.ResourceRecords;
     using DNS.Server;
-    using Newtonsoft.Json;
+    using XSing.Core.env;
 
     public static class Program
     {
@@ -54,7 +54,7 @@
             var pathToContentRoot = Path.GetDirectoryName(pathToExe) ?? Path.GetFullPath("./");
             Directory.SetCurrentDirectory(pathToContentRoot);
             // --
-
+            Term.Warn($"Content Path: {Env.ContentPath}");
             var masterFile = new MasterFile();
             var server1 = new DnsServer(new LocalRequestResolver());
 
