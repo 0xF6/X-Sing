@@ -1,6 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>preview</LangVersion>
+    <AssemblyName>x-sing.core</AssemblyName>
+    <RootNamespace>XSing.Core</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.0.0-preview5.19227.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.0.0-preview5" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\thridparty\dns\DNS\DNS.csproj" />
+  </ItemGroup>
 </Project>
