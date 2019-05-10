@@ -23,6 +23,8 @@
             Verify(db, Version, Env.Version);
             Verify(db, Login, "nero");
             Verify(db, IsBlockInternet, "true");
+            Verify(db, DNSExternalIP, "2.4.2.4");
+            Verify(db, DNSProxyIP, "1.1.1.1");
         }
         public static bool If(string key) => new SingContext().Settings.Any(x => x.Key == key);
         public static string Get(string key) => new SingContext().Settings.FirstOrDefault(x => x.Key == key)?.Value;
@@ -49,8 +51,16 @@
             db.SaveChanges();
         }
 
-        public const string IsBlockInternet = "onlyLocalConnection";
+        public const string DNSExternalIP = "dns-external-ip";
+        public const string IsBlockInternet = "only-local-connection";
         public const string Login = "login";
         public const string Version = "version";
+        public const string DNSProxyIP = "dns-proxy-ip";
+    }
+
+    public static class SettingEx
+    {
+        public static string db(this string key) => Setting.Get(key);
+        public static string db(this string key, string @default) => Setting.GetOrDefault(key, @default);
     }
 }
