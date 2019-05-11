@@ -12,9 +12,7 @@
         public DbSet<Log> Logs { get; set; }
 
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite($"Data Source={Env.ContentPath.WithCombine("xsing.db")}");
-        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
+            => optionsBuilder.UseSqlite($"Data Source={Env.ContentPath.WithCombine("xsing.db")}");
     }
 }

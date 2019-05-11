@@ -15,10 +15,9 @@
 
             foreach (var question in response.Questions)
             {
-                if (question.Type != RecordType.A)
+                if (question.Type != RecordType.A && question.Type != RecordType.SOA)
                 {
                     Term.Warn($"Ignored record type: {question.Type}, {question.Name}");
-                    //File.AppendAllText("./ignored-records.json", $"{question}\n");
                     continue;
                 }
 
