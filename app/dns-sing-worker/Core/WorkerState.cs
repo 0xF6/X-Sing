@@ -1,9 +1,12 @@
 ﻿namespace XSign.Worker.Core
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Runtime.InteropServices;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
+    using XSing.Core.db;
     using XSing.Core.env;
     using XSing.Core.etc;
 
@@ -20,6 +23,7 @@
         {
             _provider = provider;
             InstanceUID = LockInstanceUID();
+            provider.GetService<SingContext>().Database.EnsureCreated();
         }
 
 
@@ -31,6 +35,7 @@
                 Console.Error.WriteLine(msg);
                 Console.ForegroundColor = ConsoleColor.White;
                 File.WriteAllText("error.dump.log", msg);
+                if(isKill) Environment.Exit(-0x29A);
             }
         }
 
@@ -68,5 +73,22 @@
         }
 
         #endregion
+
+        public void Restart()
+        {
+            // TODO linux
+            Process.Start(Process.GetCurrentProcess().StartInfo);
+            Process.GetCurrentProcess().Kill();
+        }
+
+        public void SwitchDNS(string p0)
+        {
+            Console.WriteLine($"Set '{p0}' as primary DNS in current system.");
+        }
+
+        public void SwitchDNS(bool p0)
+        {
+            Console.WriteLine($"Reset primary DNS in current system.");
+        }
     }
 }

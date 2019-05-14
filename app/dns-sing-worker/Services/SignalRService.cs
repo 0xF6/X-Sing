@@ -1,7 +1,6 @@
 ﻿namespace XSign.Worker.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Core;
@@ -25,26 +24,40 @@
             ctx = context;
         }
 
-        public Dictionary<string, IDisposable> methodStorage = new Dictionary<string, IDisposable>();
-
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             if (!_state.IsSupported())
-            {
                 _state.DumpError($"Current OS is not supported.", true);
-            }
 
 
 
-            Url = $"signal-server".OrDefault("http://localhost:666/signal/hub");
+            Url = Setting.SignalR.OrDefault("http://localhost:666/signal/hub");
             SigConnection = new HubConnectionBuilder()
                 .WithUrl(Url)
                 .Build();
-
             SigConnection.Closed += OnClosed;
 
-            await SigConnection.StartAsync(stoppingToken);
+            SigConnection.On<RequestAction>("ACTION", (z) =>
+            {
+                switch (z)
+                {
+                    case RequestAction.OFFLINE:
+                        _state.SwitchDNS(true);
+                        break;
+                    case RequestAction.ONLINE:
+                        _state.SwitchDNS("127.0.0.1");
+                        break;
+                    case RequestAction.RESTART:
+                        _state.Restart();
+                        break;
+                }
+            });
+
+            await SigConnection.StartAsync(stoppingToken).ContinueWith(async x =>
+            {
+                if (x.Exception != null) await OnClosed(x.Exception);
+            }, stoppingToken);
             await SigConnection.SendCoreAsync("HEADER", 
                 new object[] { WorkerHeader.Collect(_state.InstanceUID) }, stoppingToken);
         }

@@ -15,7 +15,6 @@
             return Task.CompletedTask;
         }
     }
-
     public static class Sd
     {
         public static T When<T>(this T t, Func<T, bool> condition, Action<T> actor)
@@ -25,5 +24,4 @@
             return t;
         }
     }
-
 }
