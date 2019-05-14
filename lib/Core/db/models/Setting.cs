@@ -62,5 +62,7 @@
     {
         public static string db(this string key) => Setting.Get(key);
         public static string db(this string key, string @default) => Setting.GetOrDefault(key, @default);
+
+        public static string OrDefault(this string key, string @default) => Setting.GetOrDefault(key, @default);
     }
 }

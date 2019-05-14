@@ -20,7 +20,6 @@
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine("its work 2");
             return Task.CompletedTask;
         }
     }
