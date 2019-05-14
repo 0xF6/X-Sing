@@ -1,31 +1,99 @@
 trigger:
 - master
+pr:
+- master
+jobs:
+  - job: Windows
+    pool:
+      vmImage: 'windows-latest'
 
-pool:
-  vmImage: 'windows-latest'
+    variables:
+      solution: '**/*.sln'
+      buildPlatform: 'Any CPU'
+      buildConfiguration: 'Release'
+    steps:
+    - checkout: self
+      submodules: "true"
 
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+    - task: PowerShell@2
+      displayName: "Set up env variables"
+      inputs:
+        pwsh: true
+        targetType: 'inline'
+        script: 'echo (Get-Item -Path ".\").FullName; $gitHash = @(git rev-parse --short HEAD);
+          $gitTag = @(git tag --points-at HEAD --sort -version:refname);
+          echo "GitHash: $gitHash";
+          echo "GitTag:  $gitTag"; 
+          Write-Host "##vso[task.setvariable variable=git.hash;issecret=false]$gitHash";
+          if($gitTag) {Write-Host "##vso[task.setvariable variable=git.tag;issecret=false]$gitTag";}
+          else{"##vso[task.setvariable variable=git.tag;issecret=false]$gitHash";}'
+        workingDirectory: './'
 
-steps:
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '3.0.100-preview5-011568'
-    includePreviewVersions: true
-- checkout: self
-  submodules: "true"
+    - task: UseDotNet@2
+      displayName: "Install Preview .NET Core SDK"
+      inputs:
+        packageType: 'sdk'
+        version: '3.0.100-preview5-011568'
+        includePreviewVersions: true
 
-- task: NuGetToolInstaller@0
+    - task: NuGetToolInstaller@0
+      displayName: "Install NuGet"
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+    - task: NuGetCommand@2
+      displayName: "NuGet Restore"
+      inputs:
+        restoreSolution: '$(solution)'
 
-- task:  DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    feedsToUse: 'select'
-    versioningScheme: 'off'
+    - task:  DotNetCoreCLI@2
+      displayName: "Build DNS Backend"
+      name: "BuildBackend"
+      inputs:
+        projects: '**/app/Backend/**/*.csproj'
+        command: 'build'
+        feedsToUse: 'select'
+        versioningScheme: 'off'
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/backend'
+
+    - task:  DotNetCoreCLI@2
+      displayName: "Build DNS Worker"
+      name: "BuildWorker"
+      inputs:
+        projects: '**/app/dns-sing-worker/**/*.csproj'
+        command: 'build'
+        feedsToUse: 'select'
+        versioningScheme: 'off'
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/worker'
+    - task: DeleteFiles@1
+      displayName: "Clearing debug information"
+      inputs:
+        sourceFolder: '$(Build.ArtifactStagingDirectory)'
+        contents: '**/*.pdb'
+
+    - task: PublishBuildArtifacts@1
+      displayName: "Publish Artifact into conainer"
+
+    - task: ArchiveFiles@2
+      displayName: "Archive worker binary"
+      inputs:
+        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/worker'
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/x-sing.worker-$(git.tag).$(Build.BuildId)-preview.zip' 
+        replaceExistingArchive: true
+    - task: ArchiveFiles@2
+      displayName: "Archive core binary"
+      inputs:
+        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/worker'
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/x-sing.core-$(git.tag).$(Build.BuildId)-preview.zip' 
+        replaceExistingArchive: true
+        
+    - task: GithubRelease@0
+      displayName: "Publish Artifact into github"
+      inputs:
+        gitHubConnection: 'PAT'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        target: '$(build.sourceVersion)'
+        addChangeLog: true
+        tagSource: 'auto'
+        assets: '$(Build.ArtifactStagingDirectory)/*.zip'

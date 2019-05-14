@@ -1,5 +1,6 @@
 ﻿namespace Backend.Services
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using DNS.Client.RequestResolver;
@@ -19,6 +20,7 @@
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            Console.WriteLine("its work 2");
             return Task.CompletedTask;
         }
     }
