@@ -13,4 +13,4 @@
 
 🥁 DNS Board for managing IP\Host addresses internal projects under windows &amp; linux operating systems
 
-[![Build Status](https://dev.azure.com/x-sing/X-Sing/_apis/build/status/0xF6.X-Sing?branchName=master)](https://dev.azure.com/x-sing/X-Sing/_build/latest?definitionId=1&branchName=master)
+[![Build Status](https://dev.azure.com/0xF6/X-Sing/_apis/build/status/0xF6.X-Sing?branchName=master)](https://dev.azure.com/0xF6/X-Sing/_build/latest?definitionId=1&branchName=master)
