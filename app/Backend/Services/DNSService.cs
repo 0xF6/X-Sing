@@ -19,7 +19,7 @@
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-
+            return Task.CompletedTask;
         }
     }
 }

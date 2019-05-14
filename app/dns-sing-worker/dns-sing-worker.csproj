@@ -6,4 +6,8 @@
     <RootNamespace>XSign.Worker</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\Core\Core.csproj" />
+  </ItemGroup>
+
 </Project>
