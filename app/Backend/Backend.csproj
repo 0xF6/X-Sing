@@ -5,6 +5,10 @@
     <RazorLangVersion>3.0</RazorLangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.NewtonsoftJson" Version="3.0.0-preview5-19227-01" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\lib\Core\Core.csproj" />
   </ItemGroup>
 </Project>

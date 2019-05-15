@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Core;
     using Microsoft.AspNetCore.SignalR.Client;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using XSing.Core.db;
     using XSing.Core.db.models;
@@ -32,13 +33,14 @@
 
 
 
-            Url = Setting.SignalR.OrDefault("http://localhost:666/signal/hub");
+            Url = Setting.SignalR.OrDefault("http://localhost:6666/signal/hub");
             SigConnection = new HubConnectionBuilder()
                 .WithUrl(Url)
+                .AddNewtonsoftJsonProtocol()
                 .Build();
             SigConnection.Closed += OnClosed;
 
-            SigConnection.On<RequestAction>("ACTION", (z) =>
+            SigConnection.On<RequestAction>("ACTION",async (z) =>
             {
                 switch (z)
                 {
@@ -47,6 +49,7 @@
                         break;
                     case RequestAction.ONLINE:
                         _state.SwitchDNS("127.0.0.1");
+                        await SigConnection.SendAsync("WAIT", 1000, stoppingToken);
                         break;
                     case RequestAction.RESTART:
                         _state.Restart();
@@ -58,8 +61,8 @@
             {
                 if (x.Exception != null) await OnClosed(x.Exception);
             }, stoppingToken);
-            await SigConnection.SendCoreAsync("HEADER", 
-                new object[] { WorkerHeader.Collect(_state.InstanceUID) }, stoppingToken);
+            await SigConnection.SendAsync("HEADER",
+                WorkerHeader.Collect(_state.InstanceUID), stoppingToken);
         }
 
         private async Task OnClosed(Exception arg)

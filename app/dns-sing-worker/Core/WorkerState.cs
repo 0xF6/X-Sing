@@ -76,9 +76,17 @@
 
         public void Restart()
         {
+            Console.WriteLine("Catch restart");
             // TODO linux
-            Process.Start(Process.GetCurrentProcess().StartInfo);
-            Process.GetCurrentProcess().Kill();
+            try
+            {
+                Process.Start("dns-sing-worker.exe");
+                Process.GetCurrentProcess().Kill();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         public void SwitchDNS(string p0)

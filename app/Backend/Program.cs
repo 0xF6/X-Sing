@@ -4,10 +4,16 @@
     using System.IO;
     using System.Threading.Tasks;
     using DNS.Client.RequestResolver;
+    using Microsoft.AspNetCore;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http.Connections;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Services;
     using XSing.Core.db;
+    using XSing.Core.env;
+    using XSing.Core.etc;
 
     public class Program
     {
@@ -18,12 +24,30 @@
             var pathToContentRoot = Path.GetDirectoryName(pathToExe) ?? Path.GetFullPath("./");
             Directory.SetCurrentDirectory(pathToContentRoot);
             // --
-            await Host.CreateDefaultBuilder(args)
+            await WebHost.CreateDefaultBuilder(args)
+                .ConfigureJson()
                 .ConfigureServices(services =>
                 {
                     services.AddTransient<SingContext>();
                     services.AddTransient<IRequestResolver, DNSResolver>();
                     services.AddHostedService<DNSService>();
+                    services.AddMvc(q => q.EnableEndpointRouting = false);
+                    services.AddSignalR(x =>
+                    {
+                        x.EnableDetailedErrors = true;
+                    }).AddNewtonsoftJsonProtocol();
+                }).Configure(app =>
+                {
+                    app.UseSignalR(s =>
+                    {
+                        s.MapHub<WorkerHub>("/signal/hub");
+                    });
+                    app.UseMvc();
+                })
+                .UseKestrel(x =>
+                {
+                    x.AddServerHeader = false;
+                    x.ListenLocalhost(6666);
                 })
                 .Build()
                 .RunAsync();
