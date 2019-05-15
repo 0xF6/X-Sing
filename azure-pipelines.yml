@@ -77,14 +77,14 @@ jobs:
       inputs:
         rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/worker'
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/x-sing.worker-$(git.tag).$(Build.BuildId)-preview.zip' 
+        archiveFile: '$(Build.ArtifactStagingDirectory)/x-sing.worker-$(git.tag).$(Build.BuildId).zip' 
         replaceExistingArchive: true
     - task: ArchiveFiles@2
       displayName: "Archive core binary"
       inputs:
         rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/worker'
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/x-sing.core-$(git.tag).$(Build.BuildId)-preview.zip' 
+        archiveFile: '$(Build.ArtifactStagingDirectory)/x-sing.core-$(git.tag).$(Build.BuildId).zip' 
         replaceExistingArchive: true
         
     - task: GithubRelease@0
