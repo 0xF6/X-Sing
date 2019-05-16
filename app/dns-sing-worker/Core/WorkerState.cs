@@ -4,7 +4,6 @@
     using System.Diagnostics;
     using System.IO;
     using System.Runtime.InteropServices;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using XSing.Core.db;
     using XSing.Core.env;

@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Core\SystemTools\Windows\" />
     <Folder Include="Network\" />
   </ItemGroup>
 
